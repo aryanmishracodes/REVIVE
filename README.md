@@ -94,7 +94,7 @@ Every recommendation flows through strict fintech guardrails before execution:
 
 ## 7. Comparative Benchmark (Simulated Benchmark)
 
-Evaluated across **6,006 synthetic transactions** generated with a fixed reproducible seed (`seed=42`):
+Evaluated across **6,006 synthetic transactions** (Total Failed Portfolio Value: **₹3,95,73,392.56** / ~₹3.96 Cr) generated with a fixed reproducible seed (`seed=42`):
 
 | Metric | Baseline Naive Approach | REVIVE Autonomous Agent | Net Uplift |
 | :--- | :--- | :--- | :--- |
@@ -110,7 +110,7 @@ Evaluated across **6,006 synthetic transactions** generated with a fixed reprodu
 
 ## 8. Five Core Screens
 
-1. **Command Center (`/`)**: Overview metrics (Total Failed Value ₹4.02 Cr, Recoverable Opportunity ₹2.00 Cr, Total Recovered, Uplift +113.6%), Payment Failure Distribution table, and Live Pitch Scenarios.
+1. **Command Center (`/`)**: Overview metrics (Total Failed Value ₹3.96 Cr [₹3,95,73,392.56], Recoverable Opportunity ₹2.00 Cr, Total Recovered, Uplift +113.6%), Payment Failure Distribution table, and Live Pitch Scenarios.
 2. **Transactions (`/transactions`)**: Searchable and filterable data table supporting multi-field search by Transaction ID and Customer Name, with strategy badges and recovery-likelihood indicators.
 3. **Transaction Detail (`/transactions/:id`)** — *The Core Evaluation Console*:
    * Customer context, CLV, tenure, and historical peak hour affinity.
@@ -174,7 +174,7 @@ Open your browser at **`http://127.0.0.1:8000`** to access the complete applicat
 
 1. **Minute 1 — The Problem & Command Center**:
    * Open `http://127.0.0.1:8000`.
-   * *"This merchant portfolio has ₹4.02 Cr in failed payments. Traditional systems blindly retry everything 3 times—burning interchange fees and spamming customers."*
+   * *"This merchant portfolio has ₹3.96 Cr in failed payments. Traditional systems blindly retry everything 3 times—burning interchange fees and spamming customers."*
 2. **Minute 2 — The Evaluation Console (`TX-DEMO-001`)**:
    * Click into `TX-DEMO-001` (₹18,500).
    * Show Customer Context (CLV: ₹2.45L, 96% past success).
