@@ -1,4 +1,4 @@
-# REVIVE — Autonomous AI Revenue Recovery Agent
+# REVIVE - AI Revenue Recovery Agent
 > **Recover more revenue. Make every failed payment actionable.**
 
 ---
