@@ -13,6 +13,17 @@ from backend.core.database import sync_engine, Base
 # Initialize tables
 Base.metadata.create_all(sync_engine)
 
+from sqlalchemy.orm import Session
+from backend.models import Transaction
+
+try:
+    with Session(sync_engine) as _session:
+        if _session.query(Transaction).count() == 0:
+            from backend.seed import seed_database
+            seed_database()
+except Exception as _e:
+    print(f"[Startup Warning] Database check/seed skipped: {_e}")
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
