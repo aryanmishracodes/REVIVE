@@ -1,21 +1,74 @@
-# REVIVE — Autonomous AI Revenue Recovery Agent
+# REVIVE — Policy-Governed AI Revenue Recovery Agent
 > **A policy-governed revenue recovery decision and execution layer for high-scale merchant and payment gateway platforms.**
 
 ---
 
 ## 1. Context & Objectives
 
-**REVIVE** is an autonomous AI revenue recovery decision and execution layer engineered for high-scale merchant and payment gateway platforms (built for the **Razorpay AI Builder Internship 2026 — AI Revenue Recovery Track**).
+**REVIVE** is a policy-governed AI revenue recovery decision and execution layer engineered for high-scale merchant and payment gateway platforms (built for the **Razorpay AI Builder Internship 2026 — AI Revenue Recovery Track**).
 
 Payment failures are not homogenous. A naive system executes a blunt playbook: `payment failed → retry immediately → send generic notification`. This brute-force approach burns interchange fees, exhausts finite card network retry allowances, and creates customer churn friction on permanent decline reasons (e.g., expired cards).
 
 **REVIVE serves as the intelligent decision and execution layer** that analyzes transaction context, customer lifetime value, historical payment success patterns, and behavioral affinity to select the mathematically optimal recovery strategy—executing strictly within deterministic fintech guardrails.
 
+> **What "Revenue Recovery" Means**: Revenue recovery means recovering a previously failed payment that might still be successfully completed through an appropriate follow-up action (e.g., retrying after a transient network issue resolves, prompting a customer to update an expired card, or dispatching an authorized nudge). It solves the merchant/gateway optimization problem without unauthorized charges or unprovable promises.
+
 ---
 
-## 2. Core Architectural Differentiator
+## 2. What REVIVE Actually Does
 
-| Dimension | Legacy Naive Retry Systems | REVIVE Autonomous Recovery Agent |
+REVIVE solves the merchant/gateway-side problem: **"What should the payment system do next after a payment failure?"**
+
+It is not solving the problem *"the customer forgot to retry their payment."* Instead, it evaluates the full transaction and customer context to determine whether to retry, request updated payment details, notify the customer, escalate to operations, or halt recovery altogether.
+
+```
+CUSTOMER ATTEMPTS PAYMENT
+        │
+        ▼
+PAYMENT FAILS
+        │
+        ▼
+REVIVE RECEIVES FAILURE EVENT
+        │
+        ▼
+ANALYZE CONTEXT + ML RECOVERY SCORING
+        │
+        ▼
+SELECT RECOVERY STRATEGY
+        │
+        ▼
+POLICY & GOVERNANCE CHECK
+        │
+        ▼
+APPROVE / REQUIRE HUMAN APPROVAL / BLOCK
+        │
+        ▼
+ACTION EXECUTION OR SIMULATION
+        │
+        ▼
+AUDIT TRAIL + OUTCOME RECORDING
+```
+
+### The 8-Step Lifecycle:
+1. **Payment Attempt**: A customer initiates a transaction on a merchant or gateway platform.
+2. **Failure Occurs**: The transaction fails due to a network, bank, authentication, limit, or card error.
+3. **Event Ingestion**: REVIVE receives the failed payment event and extracts customer and transaction metadata.
+4. **Context & ML Scoring**: REVIVE evaluates decline codes, customer tenure, CLV, historical payment affinity hours, past nudge responsiveness, and computes an interpretable recovery probability.
+5. **Strategy Selection**: REVIVE selects the optimal recovery pathway:
+   * **Intelligent Retry**: Scheduled at the customer's historical peak activity hour.
+   * **Payment Update Request**: Dispatches a secure one-click credential update flow for expired cards.
+   * **Permitted Customer Nudge**: Multi-channel reminder respecting customer DND/opt-out preferences.
+   * **Human Escalation**: High-value transactions (> ₹10,000) gated for human review.
+   * **Stop Recovery**: Halts recovery on low-probability drop-offs to prevent interchange fee waste.
+6. **Policy & Governance Check**: The deterministic Policy Engine verifies if the selected action complies with regulatory, merchant, and risk rules.
+7. **Action Execution / Simulation**: The permitted action is executed (or simulated in the prototype environment) and its outcome is captured.
+8. **Immutable Audit Trail**: Every score, feature contribution, rule evaluation, decision state transition, and execution timestamp is permanently logged.
+
+---
+
+## 3. Core Architectural Differentiator
+
+| Dimension | Legacy Naive Retry Systems | REVIVE Policy-Governed Agent |
 | :--- | :--- | :--- |
 | **Trigger Action** | Blind, immediate retry for all failures | Contextual classification + ML recovery probability scoring |
 | **Card Expiry Handling** | Retries 3 times (100% failure rate) | 0 retries; routes directly to customer payment update link |
@@ -26,21 +79,42 @@ Payment failures are not homogenous. A naive system executes a blunt playbook: `
 
 ---
 
-## 3. End-to-End Pipeline
+## 4. End-to-End Pipeline & Prototype Scope
 
 ```
 FAILED PAYMENT EVENT
-      │
-      ▼
-Context Extraction (Customer, CLV, Prior Rates, TX) ──▶ ML Recovery Probability (Logistic Regression)
-                                                              │
-                                                              ▼
-Immutable Audit Log ◀── Simulation Runtime Outcome ◀── Policy Gate (Approved / Needs Approval / Blocked)
+        │
+        ▼
+CONTEXT EXTRACTION
+(Customer + Transaction + History)
+        │
+        ▼
+ML RECOVERY SCORING
+(Probability of Successful Recovery)
+        │
+        ▼
+STRATEGY SELECTION
+(Retry / Payment Update / Nudge / Escalate / Stop)
+        │
+        ▼
+POLICY ENGINE
+(Approve / Requires Human Approval / Block)
+        │
+        ▼
+EXECUTION OR SIMULATION
+        │
+        ▼
+AUDIT TRAIL + OUTCOME RECORDING
 ```
+
+> **Prototype Scope & Integration Architecture**:
+> * **Current Implementation**: REVIVE implements the full decision pipeline, ML scoring, strategy selection, policy enforcement, action orchestration, and immutable audit lifecycle operating against a simulated fintech payment environment (`seed=42`).
+> * **Payment Processing**: The current buildathon implementation operates within a simulated payment environment and does not directly process live customer payments or connect to live Razorpay gateway infrastructure.
+> * **Production Integration Path**: In a live deployment, REVIVE's execution layer plugs directly into payment gateway retry APIs, customer notification webhooks (WhatsApp/SMS/Email), payment-update hosted checkout pages, and merchant operations ticketing systems.
 
 ---
 
-## 4. Machine Learning & Interpretability Engine
+## 5. Machine Learning & Interpretability Engine
 
 ### Why Logistic Regression over Black-Box Ensembles?
 In financial risk, credit operations, and regulatory compliance, explainability is paramount. REVIVE utilizes an **L2-Regularized Logistic Regression** scoring engine (`sklearn.linear_model.LogisticRegression`) where feature coefficients map directly to mathematical log-odds contributions:
@@ -63,7 +137,7 @@ $$\text{Log-Odds} = \beta_0 + \sum_{i=1}^n \beta_i x_i \quad \Longrightarrow \qu
 
 ---
 
-## 5. Agent Architecture & Backend Tools
+## 6. Agent Architecture & Backend Tools
 
 REVIVE's agent architecture pairs real backend tool implementations with a deterministic fallback expert system guaranteeing 100% testability offline:
 
@@ -80,7 +154,7 @@ REVIVE's agent architecture pairs real backend tool implementations with a deter
 
 ---
 
-## 6. Deterministic Policy & Guardrail Engine
+## 7. Deterministic Policy & Guardrail Engine
 
 Every recommendation flows through strict fintech guardrails before execution:
 * **Rule 1 (`RULE-01-DND-COMMUNICATION-BLOCKED`)**: If `customer.opted_out == True`, all customer-facing communications are `BLOCKED`.
@@ -92,11 +166,11 @@ Every recommendation flows through strict fintech guardrails before execution:
 
 ---
 
-## 7. Comparative Benchmark (Simulated Benchmark)
+## 8. Comparative Benchmark (Simulated Benchmark)
 
 Evaluated across **6,006 synthetic transactions** (Total Failed Portfolio Value: **₹3,95,73,392.56** / ~₹3.96 Cr) generated with a fixed reproducible seed (`seed=42`):
 
-| Metric | Baseline Naive Approach | REVIVE Autonomous Agent | Net Uplift |
+| Metric | Baseline Naive Approach | REVIVE Policy-Governed Agent | Net Uplift |
 | :--- | :--- | :--- | :--- |
 | **Total Revenue Recovered** | ₹93,83,859.07 | **₹2,00,41,252.04** | **+₹1,06,57,392.97 (+113.57%)** |
 | **Transaction Recovery Rate** | 22.83% | **48.52%** | **+25.69% pts** |
@@ -108,7 +182,7 @@ Evaluated across **6,006 synthetic transactions** (Total Failed Portfolio Value:
 
 ---
 
-## 8. Five Core Screens
+## 9. Five Core Screens
 
 1. **Command Center (`/`)**: Overview metrics (Total Failed Value ₹3.96 Cr [₹3,95,73,392.56], Recoverable Opportunity ₹2.00 Cr, Total Recovered, Uplift +113.6%), Payment Failure Distribution table, and Live Pitch Scenarios.
 2. **Transactions (`/transactions`)**: Searchable and filterable data table supporting multi-field search by Transaction ID and Customer Name, with strategy badges and recovery-likelihood indicators.
@@ -119,12 +193,12 @@ Evaluated across **6,006 synthetic transactions** (Total Failed Portfolio Value:
    * **ML Feature Contribution Waterfall** breakdown table with direct log-odds impact.
    * **Policy Gate Status** indicator (`APPROVED`, `REQUIRES HUMAN APPROVAL`, `BLOCKED`).
    * **Single-Cycle Re-Score & Immutable Audit Trail** with chronological local timestamps.
-4. **Recovery Actions (`/actions`)**: Controlled autonomy queue with operational summary metrics and one-click **Approve** and **Reject** governance.
+4. **Recovery Actions (`/actions`)**: Controlled governance queue with operational summary metrics and one-click **Approve** and **Reject** controls.
 5. **Strategy Simulator (`/simulator`)**: Live comparative benchmark runner (Naive Baseline vs. REVIVE) with 1-click **Reset Demo States** and **Re-Run Simulation**.
 
 ---
 
-## 9. Six Pinned Pitch Demo Scenarios
+## 10. Six Pinned Pitch Demo Scenarios
 
 | Scenario ID | Transaction Name | Failure Context | Strategy & Guardrail Behavior |
 | :--- | :--- | :--- | :--- |
@@ -137,7 +211,7 @@ Evaluated across **6,006 synthetic transactions** (Total Failed Portfolio Value:
 
 ---
 
-## 10. Quick Start & Local Setup
+## 11. Quick Start & Local Setup
 
 ### Prerequisites
 * Python 3.11+
@@ -170,7 +244,7 @@ Open your browser at **`http://127.0.0.1:8000`** to access the complete applicat
 
 ---
 
-## 11. 5-Minute Panel Pitch Demo Script
+## 12. 5-Minute Panel Pitch Demo Script
 
 1. **Minute 1 — The Problem & Command Center**:
    * Open `http://127.0.0.1:8000`.
@@ -194,7 +268,7 @@ Open your browser at **`http://127.0.0.1:8000`** to access the complete applicat
 
 ---
 
-## 12. Project Structure
+## 13. Project Structure
 
 ```
 REVIVE/
@@ -222,6 +296,6 @@ REVIVE/
 
 ---
 
-## 13. License
+## 14. License
 
 MIT License — Built for the Razorpay AI Builder Internship 2026.
