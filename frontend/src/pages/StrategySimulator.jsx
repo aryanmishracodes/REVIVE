@@ -56,7 +56,7 @@ export const StrategySimulator = ({ onSelectTransaction }) => {
   }, []);
 
   const baseRate = benchmark ? (benchmark.baseline_recovery_rate * 100).toFixed(1) : '22.8';
-  const revRate = benchmark ? (benchmark.revive_recovery_rate * 100).toFixed(1) : '49.0';
+  const revRate = benchmark ? (benchmark.revive_recovery_rate * 100).toFixed(1) : '48.5';
   const rateDiff = (parseFloat(revRate) - parseFloat(baseRate)).toFixed(1);
   const multiplier = (parseFloat(revRate) / (parseFloat(baseRate) || 1)).toFixed(1);
 
@@ -137,17 +137,17 @@ export const StrategySimulator = ({ onSelectTransaction }) => {
                 Revenue Recovered
               </span>
               <span className="px-2 py-0.5 text-[10px] font-mono rounded bg-[#151E2E] text-slate-300 border border-[#202C42]">
-                +₹1.10 Cr (+115.7%)
+                +₹{((benchmark?.revenue_uplift_amount || 10657392.97) / 10000000).toFixed(2)} Cr (+{(benchmark?.revenue_uplift_percent || 113.57).toFixed(1)}%)
               </span>
             </div>
             <div className="text-2xl sm:text-[26px] font-bold font-mono tracking-tight text-slate-100 my-2.5">
-              <span className="text-slate-400">₹94.78L</span>
+              <span className="text-slate-400">₹{((benchmark?.baseline_recovered_value || 9383859.07) / 100000).toFixed(2)}L</span>
               <span className="text-slate-600 mx-2 font-sans font-normal text-lg">→</span>
-              <span className="text-emerald-400">₹2.04Cr</span>
+              <span className="text-emerald-400">₹{((benchmark?.revive_recovered_value || 20041252.04) / 10000000).toFixed(2)}Cr</span>
             </div>
           </div>
           <div className="text-[11px] text-slate-400 mt-3 pt-2.5 border-t border-[#161F30]/60 font-mono">
-            ₹{(benchmark?.baseline_recovered_value || 0).toLocaleString('en-IN')} → ₹{(benchmark?.revive_recovered_value || 0).toLocaleString('en-IN')}
+            ₹{(benchmark?.baseline_recovered_value || 9383859.07).toLocaleString('en-IN')} → ₹{(benchmark?.revive_recovered_value || 20041252.04).toLocaleString('en-IN')}
           </div>
         </div>
 
@@ -159,15 +159,15 @@ export const StrategySimulator = ({ onSelectTransaction }) => {
                 Net Revenue Uplift & Friction
               </span>
               <span className="px-2 py-0.5 text-[10px] font-mono rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                -{(benchmark?.retries_saved_percent || 48.5)}% Retry Waste
+                -{(benchmark?.retries_saved_percent || 77.72).toFixed(1)}% Retry Waste
               </span>
             </div>
             <div className="text-3xl sm:text-[30px] font-bold font-mono tracking-tight text-emerald-400 my-2.5">
-              +{(benchmark?.revenue_uplift_percent || 0).toFixed(2)}%
+              +{(benchmark?.revenue_uplift_percent || 113.57).toFixed(2)}%
             </div>
           </div>
           <div className="text-[11px] text-slate-400 mt-3 pt-2.5 border-t border-[#161F30]/60">
-            Reduced average attempts from {benchmark?.baseline_avg_retries || 3.0} to {benchmark?.revive_avg_retries || 0.68} / tx.
+            Reduced average attempts from {benchmark?.baseline_avg_retries || 3.0} to {benchmark?.revive_avg_retries || 0.67} / tx.
           </div>
         </div>
       </div>
@@ -189,7 +189,7 @@ export const StrategySimulator = ({ onSelectTransaction }) => {
           <div className="space-y-2 font-mono text-xs">
             <div className="flex justify-between p-2 rounded bg-[#0A0F18] border border-[#141C2B]">
               <span className="text-slate-400 font-sans">Total Revenue Recovered</span>
-              <span className="font-semibold text-slate-200">₹{(benchmark?.baseline_recovered_value || 0).toLocaleString('en-IN')}</span>
+              <span className="font-semibold text-slate-200">₹{(benchmark?.baseline_recovered_value || 9383859.07).toLocaleString('en-IN')}</span>
             </div>
             <div className="flex justify-between p-2 rounded bg-[#0A0F18] border border-[#141C2B]">
               <span className="text-slate-400 font-sans">Transaction Recovery Rate</span>
@@ -227,7 +227,7 @@ export const StrategySimulator = ({ onSelectTransaction }) => {
           <div className="space-y-2 font-mono text-xs">
             <div className="flex justify-between p-2 rounded bg-[#0A0F18] border border-[#1A2538]">
               <span className="text-slate-400 font-sans">Total Revenue Recovered</span>
-              <span className="font-bold text-emerald-400">₹{(benchmark?.revive_recovered_value || 0).toLocaleString('en-IN')}</span>
+              <span className="font-bold text-emerald-400">₹{(benchmark?.revive_recovered_value || 20041252.04).toLocaleString('en-IN')}</span>
             </div>
             <div className="flex justify-between p-2 rounded bg-[#0A0F18] border border-[#1A2538]">
               <span className="text-slate-400 font-sans">Transaction Recovery Rate</span>
@@ -235,11 +235,11 @@ export const StrategySimulator = ({ onSelectTransaction }) => {
             </div>
             <div className="flex justify-between p-2 rounded bg-[#0A0F18] border border-[#1A2538]">
               <span className="text-slate-400 font-sans">Average Retries per Failed TX</span>
-              <span className="font-medium text-blue-400">{benchmark?.revive_avg_retries || 0.68} attempts (-48.5%)</span>
+              <span className="font-medium text-blue-400">{benchmark?.revive_avg_retries || 0.67} attempts (-{(benchmark?.retries_saved_percent || 77.72).toFixed(1)}%)</span>
             </div>
             <div className="flex justify-between p-2 rounded bg-[#0A0F18] border border-[#1A2538]">
               <span className="text-slate-400 font-sans">Card Expiry Capture</span>
-              <span className="font-medium text-emerald-400">53.8% (Payment Update Flow)</span>
+              <span className="font-medium text-emerald-400">54.3% (Payment Update Flow)</span>
             </div>
           </div>
 

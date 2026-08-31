@@ -6,6 +6,7 @@ Represents typical industry behavior:
 - Identical generic reminder template
 - 0% sensitivity to failure reasons (e.g. card expiry retried anyway)
 """
+import zlib
 from typing import List, Dict, Any
 
 
@@ -67,8 +68,8 @@ def run_baseline_simulation(transactions: List[Dict[str, Any]]) -> Dict[str, Any
         else:
             baseline_success_prob = 0.15 * prev_rate
 
-        # Deterministic pseudo-random threshold based on tx id
-        hash_val = (abs(hash(tx["transaction_id"])) % 10000) / 10000.0
+        # Deterministic hash threshold based on transaction_id (cross-process stable)
+        hash_val = (zlib.crc32(tx["transaction_id"].encode("utf-8")) % 10000) / 10000.0
         success = hash_val < baseline_success_prob
 
         if success:

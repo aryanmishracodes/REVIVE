@@ -98,19 +98,19 @@ Evaluated across **6,006 synthetic transactions** generated with a fixed reprodu
 
 | Metric | Baseline Naive Approach | REVIVE Autonomous Agent | Net Uplift |
 | :--- | :--- | :--- | :--- |
-| **Total Revenue Recovered** | ₹92,46,645.23 | **₹2,04,23,529.97** | **+₹1,11,76,884.74 (+120.9%)** |
-| **Transaction Recovery Rate** | 22.3% | **47.7%** | **+25.4% pts** |
-| **Average Retries per TX** | 3.00 attempts | **0.68 attempts** | **-77.4% fee waste** |
-| **Card Expiry Recovery Rate** | 0.0% | **50.1%** | **+50.1% pts** |
-| **High-Value (>₹10k) Capture Rate** | 23.0% | **52.4%** | **+29.4% pts** |
+| **Total Revenue Recovered** | ₹93,83,859.07 | **₹2,00,41,252.04** | **+₹1,06,57,392.97 (+113.57%)** |
+| **Transaction Recovery Rate** | 22.83% | **48.52%** | **+25.69% pts** |
+| **Average Retries per TX** | 3.00 attempts | **0.67 attempts** | **-77.72% fee waste** |
+| **Card Expiry Recovery Rate** | 0.0% | **54.30%** | **+54.30% pts** |
+| **High-Value (>₹10k) Capture Rate** | 24.03% | **53.34%** | **+29.31% pts** |
 
-> **Note on Evaluation Methodology**: All benchmark numbers represent empirical measurements from a deterministic Monte Carlo simulation executed across the 6,006 synthetic dataset (`seed=42`). Transaction recovery rate measures the percentage of failed transactions successfully recovered; recovered value measures total monetary value recovered.
+> **Note on Evaluation Methodology**: All benchmark numbers represent empirical measurements from a deterministic simulation executed across the 6,006 synthetic dataset (`seed=42`). Transaction recovery rate measures the percentage of failed transactions successfully recovered; recovered value measures total monetary value recovered.
 
 ---
 
 ## 8. Five Core Screens
 
-1. **Command Center (`/`)**: Overview metrics (Total Failed Value ₹4.02 Cr, Recoverable Opportunity ₹2.04 Cr, Total Recovered, Uplift), Payment Failure Distribution table, and Live Pitch Scenarios.
+1. **Command Center (`/`)**: Overview metrics (Total Failed Value ₹4.02 Cr, Recoverable Opportunity ₹2.00 Cr, Total Recovered, Uplift +113.6%), Payment Failure Distribution table, and Live Pitch Scenarios.
 2. **Transactions (`/transactions`)**: Searchable and filterable data table supporting multi-field search by Transaction ID and Customer Name, with strategy badges and recovery-likelihood indicators.
 3. **Transaction Detail (`/transactions/:id`)** — *The Core Evaluation Console*:
    * Customer context, CLV, tenure, and historical peak hour affinity.
@@ -189,7 +189,7 @@ Open your browser at **`http://127.0.0.1:8000`** to access the complete applicat
    * Show that blind retries are blocked by policy; routed to a 1-click update link.
 5. **Minute 5 — Strategy Simulator Benchmark**:
    * Open **Strategy Simulator**.
-   * Run benchmark: *"REVIVE delivers +120.9% net revenue uplift (+₹1.12 Cr) and saves 77.4% in wasted gateway attempts across 6,006 transactions."*
+   * Run benchmark: *"REVIVE delivers +113.57% net revenue uplift (+₹1.07 Cr) and saves 77.7% in wasted gateway attempts across 6,006 transactions."*
    * Close: *"REVIVE doesn't just retry failed payments—it decides what action makes sense, enforces strict financial guardrails, and provides full mathematical explainability."*
 
 ---

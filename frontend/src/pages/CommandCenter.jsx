@@ -96,7 +96,7 @@ export const CommandCenter = ({ onSelectTransaction, onNavigateTab }) => {
         <MetricCard
           title="Total Recovered"
           value={`₹${(metrics?.recovered_value || 0).toLocaleString('en-IN')}`}
-          subtitle={`${(metrics?.overall_recovery_rate ?? 49.0).toFixed(1)}% transaction recovery rate`}
+          subtitle={`${(metrics?.overall_recovery_rate ?? 48.5).toFixed(1)}% transaction recovery rate`}
           icon={CheckCircle2}
           trend={metrics?.revive_uplift_percent ? `+${metrics.revive_uplift_percent}%` : undefined}
           trendLabel="vs baseline"

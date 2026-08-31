@@ -2,6 +2,7 @@
 REVIVE Autonomous Agent Simulator Engine.
 Simulates context-aware, strategy-routed, guardrail-governed recovery across synthetic records.
 """
+import zlib
 from typing import List, Dict, Any
 
 
@@ -77,8 +78,8 @@ def run_revive_simulation(transactions: List[Dict[str, Any]]) -> Dict[str, Any]:
 
         total_retries_attempted += retries_spent
 
-        # Deterministic simulation hash
-        hash_val = (abs(hash(tx["transaction_id"])) % 10000) / 10000.0
+        # Deterministic simulation hash based on transaction_id (cross-process stable)
+        hash_val = (zlib.crc32(tx["transaction_id"].encode("utf-8")) % 10000) / 10000.0
         success = hash_val < revive_success_prob
 
         if success:
