@@ -10,6 +10,14 @@ def _get_db_url(async_driver: bool = True) -> str:
     return f"sqlite+aiosqlite:///{db_file}" if async_driver else f"sqlite:///{db_file}"
 
 
+def _get_model_path() -> str:
+    is_serverless = bool(os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"))
+    packaged_model = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "ml", "recovery_model.joblib")
+    if os.path.exists(packaged_model):
+        return packaged_model
+    return "/tmp/recovery_model.joblib" if is_serverless else "./backend/ml/recovery_model.joblib"
+
+
 class Settings(BaseSettings):
     PROJECT_NAME: str = "REVIVE — Policy-Governed AI Revenue Recovery Agent"
     VERSION: str = "1.0.0"
@@ -20,7 +28,7 @@ class Settings(BaseSettings):
     SYNC_DATABASE_URL: str = _get_db_url(async_driver=False)
     
     # Machine Learning
-    MODEL_PATH: str = "./backend/ml/recovery_model.joblib"
+    MODEL_PATH: str = _get_model_path()
     SYNTHETIC_DATASET_SIZE: int = 6000
     RANDOM_SEED: int = 42
     
