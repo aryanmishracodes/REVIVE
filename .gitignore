@@ -16,12 +16,12 @@ venv/
 htmlcov/
 
 # Databases
-*.db
 *.sqlite
 *.sqlite3
 *.db-journal
 *.db-wal
 *.db-shm
+!revive.db
 
 # OS & Editor files
 .DS_Store

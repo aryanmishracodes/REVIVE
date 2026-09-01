@@ -3,10 +3,26 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional
 
 
-def _get_db_url(async_driver: bool = True) -> str:
-    # On Vercel / serverless runtimes, root is read-only; use /tmp for writable SQLite
+import shutil
+
+def _ensure_db_initialized() -> str:
     is_serverless = bool(os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"))
-    db_file = "/tmp/revive.db" if is_serverless else "./revive.db"
+    if not is_serverless:
+        return "./revive.db"
+    
+    tmp_db = "/tmp/revive.db"
+    if not os.path.exists(tmp_db):
+        root_db = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "revive.db")
+        if os.path.exists(root_db):
+            try:
+                shutil.copyfile(root_db, tmp_db)
+            except Exception as e:
+                print(f"[Config Warning] Failed to copy pre-seeded DB: {e}")
+    return tmp_db
+
+
+def _get_db_url(async_driver: bool = True) -> str:
+    db_file = _ensure_db_initialized()
     return f"sqlite+aiosqlite:///{db_file}" if async_driver else f"sqlite:///{db_file}"
 
 
