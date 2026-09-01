@@ -11,13 +11,25 @@ def _ensure_db_initialized() -> str:
         return "./revive.db"
     
     tmp_db = "/tmp/revive.db"
-    if not os.path.exists(tmp_db):
-        root_db = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "revive.db")
-        if os.path.exists(root_db):
-            try:
-                shutil.copyfile(root_db, tmp_db)
-            except Exception as e:
-                print(f"[Config Warning] Failed to copy pre-seeded DB: {e}")
+    if not os.path.exists(tmp_db) or os.path.getsize(tmp_db) < 100000:
+        candidate_paths = [
+            os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "revive.db"),
+            os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "revive.db"),
+            os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "api", "revive.db"),
+            "/var/task/backend/revive.db",
+            "/var/task/api/revive.db",
+            "/var/task/revive.db",
+            "./backend/revive.db",
+            "./revive.db",
+        ]
+        for src in candidate_paths:
+            if os.path.exists(src) and os.path.getsize(src) > 100000:
+                try:
+                    shutil.copyfile(src, tmp_db)
+                    print(f"[Config Engine] Successfully copied pre-seeded DB from {src} to {tmp_db}")
+                    break
+                except Exception as e:
+                    print(f"[Config Warning] Failed to copy DB from {src}: {e}")
     return tmp_db
 
 
