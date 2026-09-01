@@ -24,9 +24,10 @@ export const RecoveryActions = ({ onSelectTransaction }) => {
     try {
       setLoading(true);
       const data = await getActions({ limit: 200 });
-      setAllActions(data);
+      setAllActions(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Failed to load actions', err);
+      setAllActions([]);
     } finally {
       setLoading(false);
     }
@@ -72,14 +73,15 @@ export const RecoveryActions = ({ onSelectTransaction }) => {
     }
   };
 
-  const totalCount = allActions.length;
-  const pendingCount = allActions.filter((a) => a.status === 'PENDING_APPROVAL').length;
-  const approvedCount = allActions.filter((a) => a.status === 'APPROVED').length;
-  const executedCount = allActions.filter((a) => a.status === 'EXECUTED').length;
+  const safeAllActions = Array.isArray(allActions) ? allActions : [];
+  const totalCount = safeAllActions.length;
+  const pendingCount = safeAllActions.filter((a) => a?.status === 'PENDING_APPROVAL').length;
+  const approvedCount = safeAllActions.filter((a) => a?.status === 'APPROVED').length;
+  const executedCount = safeAllActions.filter((a) => a?.status === 'EXECUTED').length;
 
   const actions = statusFilter === 'ALL'
-    ? allActions
-    : allActions.filter((a) => a.status === statusFilter);
+    ? safeAllActions
+    : safeAllActions.filter((a) => a?.status === statusFilter);
 
   return (
     <div className="p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">

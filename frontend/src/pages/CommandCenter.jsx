@@ -21,8 +21,8 @@ export const CommandCenter = ({ onSelectTransaction, onNavigateTab }) => {
     try {
       setLoading(true);
       const [m, d] = await Promise.all([getDashboardMetrics(), getFailureDistribution()]);
-      setMetrics(m);
-      setDistribution(d);
+      if (m && typeof m === 'object') setMetrics(m);
+      if (Array.isArray(d)) setDistribution(d);
     } catch (err) {
       console.error('Failed to load dashboard metrics', err);
     } finally {
@@ -144,20 +144,20 @@ export const CommandCenter = ({ onSelectTransaction, onNavigateTab }) => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#151D2C]">
-                {distribution.map((d) => (
-                  <tr key={d.failure_reason} className="hover:bg-[#121927] transition-colors duration-100">
+                {Array.isArray(distribution) && distribution.map((d) => (
+                  <tr key={d.failure_reason || Math.random()} className="hover:bg-[#121927] transition-colors duration-100">
                     <td className="py-2.5 font-sans font-medium text-slate-200">
-                      {d.failure_reason.replace(/_/g, ' ')}
+                      {String(d.failure_reason || '').replace(/_/g, ' ')}
                     </td>
-                    <td className="py-2.5 text-right font-mono text-slate-400">{d.count}</td>
-                    <td className="py-2.5 text-right font-mono text-slate-300">₹{d.failed_value.toLocaleString('en-IN')}</td>
-                    <td className="py-2.5 text-right font-mono text-slate-200 font-medium">₹{d.recovered_value.toLocaleString('en-IN')}</td>
+                    <td className="py-2.5 text-right font-mono text-slate-400">{d.count ?? 0}</td>
+                    <td className="py-2.5 text-right font-mono text-slate-300">₹{(d.failed_value ?? 0).toLocaleString('en-IN')}</td>
+                    <td className="py-2.5 text-right font-mono text-slate-200 font-medium">₹{(d.recovered_value ?? 0).toLocaleString('en-IN')}</td>
                     <td className="py-2.5 text-right font-mono">
                       <span className={`font-semibold ${
-                        d.recovery_rate >= 50 ? 'text-emerald-400' :
-                        d.recovery_rate >= 35 ? 'text-slate-200' : 'text-slate-400'
+                        (d.recovery_rate ?? 0) >= 50 ? 'text-emerald-400' :
+                        (d.recovery_rate ?? 0) >= 35 ? 'text-slate-200' : 'text-slate-400'
                       }`}>
-                        {d.recovery_rate}%
+                        {d.recovery_rate ?? 0}%
                       </span>
                     </td>
                   </tr>

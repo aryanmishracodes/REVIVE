@@ -214,28 +214,41 @@ export const TransactionDetail = ({ txId, onBack, onSelectDemo }) => {
             <div className="flex items-baseline justify-between py-2.5 border-y border-[#161F30]">
               <span className="text-xs text-slate-400">Failed Amount</span>
               <span className="text-2xl font-bold font-mono text-slate-100">
-                ₹{detail?.amount?.toLocaleString('en-IN')}
+                ₹{(detail?.amount ?? 0).toLocaleString('en-IN')}
               </span>
             </div>
 
-            <div className="space-y-2.5 text-xs">
-              <div className="flex justify-between py-0.5">
-                <span className="text-slate-400">Failure Reason</span>
-                <span className="font-semibold text-rose-400">{detail?.failure_reason?.replace(/_/g, ' ')}</span>
+            <div className="space-y-2 text-xs font-mono">
+              <div className="flex justify-between">
+                <span className="text-slate-400 font-sans">Gateway Decline Reason</span>
+                <span className="text-slate-200">{String(detail?.failure_reason || '').replace(/_/g, ' ')}</span>
               </div>
-              <div className="flex justify-between py-0.5">
-                <span className="text-slate-400">Payment Method</span>
-                <span className="font-mono text-slate-300">{detail?.payment_method}</span>
+              <div className="flex justify-between">
+                <span className="text-slate-400 font-sans">Payment Method</span>
+                <span className="text-slate-200">{detail?.payment_method || 'N/A'}</span>
               </div>
-              <div className="flex justify-between py-0.5">
-                <span className="text-slate-400">Retries Attempted</span>
-                <span className="font-mono font-medium text-slate-300">{detail?.retry_count} / 3</span>
+              <div className="flex justify-between">
+                <span className="text-slate-400 font-sans">Retry Count</span>
+                <span className="text-slate-200">{detail?.retry_count ?? 0} / 3</span>
               </div>
-              <div className="flex justify-between py-0.5">
-                <span className="text-slate-400">Timestamp</span>
-                <span className="font-mono text-slate-400">
-                  {formatDateTime(detail?.timestamp)}
-                </span>
+              <div className="flex justify-between">
+                <span className="text-slate-400 font-sans">Created</span>
+                <span className="text-slate-400 text-[11px]">{formatDateTime(detail?.created_at)}</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 pt-3 border-t border-[#161F30] text-xs">
+              <div className="p-2.5 rounded bg-[#0A0F18] border border-[#141C2B]">
+                <div className="text-[10px] text-slate-500">Customer Lifetime Value</div>
+                <div className="text-sm font-bold font-mono text-slate-200 mt-0.5">
+                  ₹{(customer?.clv ?? 0).toLocaleString('en-IN')}
+                </div>
+              </div>
+              <div className="p-2.5 rounded bg-[#0A0F18] border border-[#141C2B]">
+                <div className="text-[10px] text-slate-500">Subscription Tenure</div>
+                <div className="text-sm font-bold font-mono text-slate-200 mt-0.5">
+                  {customer?.subscription_age_months ?? 0} Months
+                </div>
               </div>
             </div>
           </div>
@@ -401,7 +414,7 @@ export const TransactionDetail = ({ txId, onBack, onSelectDemo }) => {
                          `POLICY GATE: ${decision?.policy_status || 'BLOCKED'} (${decision?.policy_rule_triggered || 'RULE-00'})`}
                       </div>
                       <div className="text-[11px] text-slate-400 mt-0.5">
-                        {isExecuted ? `Action ${decision?.recommended_strategy || 'INTELLIGENT_RETRY'} executed in simulation. Simulated recovery: ₹${recoveredAmt.toLocaleString('en-IN')} recorded.` :
+                        {isExecuted ? `Action ${decision?.recommended_strategy || 'INTELLIGENT_RETRY'} executed in simulation. Simulated recovery: ₹${(recoveredAmt ?? 0).toLocaleString('en-IN')} recorded.` :
                          isApproved ? 'Action approved by Merchant Ops. Ready for controlled execution.' :
                          isPending ? 'Amount > ₹10,000 threshold requires merchant ops sign-off before dispatch.' :
                          isRejected ? 'Recovery action declined by merchant operations. No retries dispatched.' :
@@ -418,32 +431,36 @@ export const TransactionDetail = ({ txId, onBack, onSelectDemo }) => {
                         <button
                           onClick={() => handleApprove(primaryAction.action_id)}
                           disabled={executing}
-                          className="px-3 py-1.5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs transition-colors active:scale-[0.98] disabled:opacity-50"
+                          className="px-3 py-1.5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs transition-colors flex items-center gap-1.5 active:scale-[0.98] shadow-sm disabled:opacity-50"
                         >
-                          Approve Action
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Approve Action</span>
                         </button>
                         <button
-                          onClick={() => handleReject(primaryAction.action_id)}
+                          onClick={() => handleRejectPrompt(primaryAction.action_id)}
                           disabled={executing}
-                          className="px-3 py-1.5 rounded-md bg-[#182233] hover:bg-[#202D42] text-slate-300 text-xs transition-colors active:scale-[0.98] disabled:opacity-50"
+                          className="px-3 py-1.5 rounded-md bg-[#161F2E] border border-[#222E42] hover:bg-rose-500/20 hover:border-rose-500/30 text-rose-300 font-medium text-xs transition-colors flex items-center gap-1.5 active:scale-[0.98] disabled:opacity-50"
                         >
-                          Reject
+                          <X className="w-3.5 h-3.5" />
+                          <span>Reject</span>
                         </button>
                       </>
                     )}
-                    {isApproved && !isExecuted && primaryAction && (
+                    {isApproved && primaryAction && (
                       <button
                         onClick={() => handleExecute(primaryAction.action_id)}
                         disabled={executing}
-                        className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs transition-colors active:scale-[0.98] disabled:opacity-50"
+                        className="px-3.5 py-1.5 rounded-md bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs transition-colors flex items-center gap-1.5 active:scale-[0.98] shadow-sm disabled:opacity-50"
                       >
-                        <Play className="w-3.5 h-3.5 fill-current" />
-                        <span>
-                          {primaryAction?.action_type === 'STOP_RECOVERY' || decision?.recommended_strategy === 'STOP_RECOVERY'
-                            ? 'Execute Stop-Recovery Action'
-                            : 'Execute Action'}
-                        </span>
+                        <Play className={`w-3.5 h-3.5 fill-current ${executing ? 'animate-pulse' : ''}`} />
+                        <span>{executing ? 'Executing...' : 'Execute Action'}</span>
                       </button>
+                    )}
+                    {isExecuted && (
+                      <div className="flex items-center gap-1.5 px-3 py-1 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono font-medium">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>Execution Complete</span>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -451,19 +468,19 @@ export const TransactionDetail = ({ txId, onBack, onSelectDemo }) => {
             })()}
           </div>
 
-          {/* ML Feature Waterfall Breakdown Table */}
+          {/* Machine Learning Decision & Feature Importance Waterfall */}
           <div className="p-5 rounded-lg bg-[#0D121D] border border-[#192233] space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-xs font-semibold text-slate-100">
-                  ML Interpretability: Feature Contribution Breakdown
-                </h3>
-                <p className="text-[11px] text-slate-400 mt-0.5">
-                  Waterfall weights determining recovery likelihood log-odds
+                <h2 className="text-sm font-semibold text-slate-100">
+                  ML Interpretability & Feature Waterfall Breakdown
+                </h2>
+                <p className="text-[12px] text-slate-400 mt-0.5">
+                  Direct log-odds mathematical attribution from L2 Logistic Regression model
                 </p>
               </div>
-              <span className="text-[10px] font-mono text-slate-400 bg-[#131A29] px-1.5 py-0.2 rounded border border-[#1E283D]">
-                L2 Logistic Weights
+              <span className="text-[10px] font-mono text-slate-400">
+                Log-Odds Engine
               </span>
             </div>
 
@@ -478,14 +495,14 @@ export const TransactionDetail = ({ txId, onBack, onSelectDemo }) => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#151D2C] font-mono">
-                  {decision?.feature_breakdown?.map((f) => (
-                    <tr key={f.feature} className="hover:bg-[#121927] transition-colors duration-100">
+                  {Array.isArray(decision?.feature_breakdown) && decision.feature_breakdown.map((f) => (
+                    <tr key={f.feature || Math.random()} className="hover:bg-[#121927] transition-colors duration-100">
                       <td className="py-2.5 font-sans font-medium text-slate-200">{f.label}</td>
                       <td className="py-2.5 font-sans text-slate-400 text-[11px]">{f.explanation}</td>
                       <td className={`py-2.5 text-right font-semibold ${
-                        f.weight > 0 ? 'text-emerald-400' : f.weight < 0 ? 'text-rose-400' : 'text-slate-400'
+                        (f.weight ?? 0) > 0 ? 'text-emerald-400' : (f.weight ?? 0) < 0 ? 'text-rose-400' : 'text-slate-400'
                       }`}>
-                        {f.weight > 0 ? `+${f.weight.toFixed(3)}` : f.weight.toFixed(3)}
+                        {(f.weight ?? 0) > 0 ? `+${Number(f.weight).toFixed(3)}` : Number(f.weight ?? 0).toFixed(3)}
                       </td>
                       <td className="py-2.5 text-right">
                         <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
@@ -517,10 +534,10 @@ export const TransactionDetail = ({ txId, onBack, onSelectDemo }) => {
             </div>
 
             <div className="relative pl-4.5 border-l border-[#1E283D] space-y-3.5 ml-2 pt-1">
-              {detail?.audit_logs?.length === 0 ? (
+              {!Array.isArray(detail?.audit_logs) || detail.audit_logs.length === 0 ? (
                 <div className="text-xs text-slate-500">No audit records logged yet.</div>
               ) : (
-                detail?.audit_logs?.map((log) => (
+                detail.audit_logs.map((log) => (
                   <div key={log.log_id} className="relative group">
                     {/* Event bullet point */}
                     <div className="absolute -left-[23px] top-1.5 w-2.5 h-2.5 rounded-full bg-blue-500/80 ring-4 ring-[#0D121D]" />

@@ -31,8 +31,8 @@ export const MetricCard = ({ title, value, subtitle, icon: Icon, trend, trendLab
 
       <div className="flex items-center justify-between text-[11px] mt-2 pt-2 border-t border-[#161F30]/60">
         {subtitle && <span className="text-slate-500 truncate mr-2">{subtitle}</span>}
-        {trend && (
-          <span className={`font-mono shrink-0 ${trend.startsWith('+') ? 'text-emerald-400' : 'text-slate-400'}`}>
+        {trend !== undefined && trend !== null && (
+          <span className={`font-mono shrink-0 ${String(trend).startsWith('+') ? 'text-emerald-400' : 'text-slate-400'}`}>
             {trend} {trendLabel && <span className="text-slate-500 font-sans">({trendLabel})</span>}
           </span>
         )}

@@ -27,9 +27,10 @@ export const Transactions = ({ onSelectTransaction }) => {
         search: search || undefined,
       };
       const data = await getTransactions(params);
-      setTransactions(data);
+      setTransactions(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Failed to fetch transactions', err);
+      setTransactions([]);
     } finally {
       setLoading(false);
     }
@@ -151,7 +152,7 @@ export const Transactions = ({ onSelectTransaction }) => {
                     </div>
                   </td>
                 </tr>
-              ) : transactions.length === 0 ? (
+              ) : !Array.isArray(transactions) || transactions.length === 0 ? (
                 <tr>
                   <td colSpan="9" className="py-12 text-center text-slate-400 font-medium text-xs">
                     No transactions found
@@ -159,33 +160,33 @@ export const Transactions = ({ onSelectTransaction }) => {
                 </tr>
               ) : (
                 transactions.map((tx) => {
-                  const prob = tx.recovery_probability ?? 0.5;
+                  const prob = tx?.recovery_probability ?? 0.5;
                   const probPct = Math.round(prob * 100);
                   return (
                     <tr
-                      key={tx.transaction_id}
-                      onClick={() => onSelectTransaction(tx.transaction_id)}
+                      key={tx?.transaction_id || Math.random()}
+                      onClick={() => onSelectTransaction(tx?.transaction_id)}
                       className="hover:bg-[#121927] cursor-pointer transition-colors duration-150 group"
                     >
                       <td className="py-2.5 px-4 font-mono font-medium text-slate-300 group-hover:text-blue-400 transition-colors">
-                        {tx.transaction_id}
+                        {tx?.transaction_id}
                       </td>
                       <td className="py-2.5 px-4">
-                        <div className="font-medium text-slate-200">{tx.customer_name}</div>
+                        <div className="font-medium text-slate-200">{tx?.customer_name}</div>
                         <div className="text-[11px] text-slate-400 font-mono">
-                          {tx.customer_segment} • {tx.payment_method}
+                          {tx?.customer_segment} • {tx?.payment_method}
                         </div>
                       </td>
                       <td className="py-2.5 px-4 text-right font-mono font-semibold text-slate-100">
-                        ₹{tx.amount.toLocaleString('en-IN')}
+                        ₹{(tx?.amount ?? 0).toLocaleString('en-IN')}
                       </td>
                       <td className="py-2.5 px-4">
                         <span className="text-slate-300 font-sans">
-                          {tx.failure_reason.replace(/_/g, ' ')}
+                          {String(tx?.failure_reason || '').replace(/_/g, ' ')}
                         </span>
                       </td>
                       <td className="py-2.5 px-4 text-center font-mono text-slate-400">
-                        {tx.retry_count} / 3
+                        {tx?.retry_count ?? 0} / 3
                       </td>
                       <td className="py-2.5 px-4">
                         <div className="flex items-center gap-2 font-mono">

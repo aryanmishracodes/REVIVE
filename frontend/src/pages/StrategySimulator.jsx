@@ -55,8 +55,8 @@ export const StrategySimulator = ({ onSelectTransaction }) => {
     fetchBenchmark();
   }, []);
 
-  const baseRate = benchmark ? (benchmark.baseline_recovery_rate * 100).toFixed(1) : '22.8';
-  const revRate = benchmark ? (benchmark.revive_recovery_rate * 100).toFixed(1) : '48.5';
+  const baseRate = benchmark?.baseline_recovery_rate !== undefined ? (Number(benchmark.baseline_recovery_rate) * 100).toFixed(1) : '22.8';
+  const revRate = benchmark?.revive_recovery_rate !== undefined ? (Number(benchmark.revive_recovery_rate) * 100).toFixed(1) : '48.5';
   const rateDiff = (parseFloat(revRate) - parseFloat(baseRate)).toFixed(1);
   const multiplier = (parseFloat(revRate) / (parseFloat(baseRate) || 1)).toFixed(1);
 
@@ -278,21 +278,21 @@ export const StrategySimulator = ({ onSelectTransaction }) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#151D2C]">
-              {benchmark?.breakdown_by_category?.map((c) => (
-                <tr key={c.category} className="hover:bg-[#121927] transition-colors duration-100">
+              {Array.isArray(benchmark?.breakdown_by_category) && benchmark.breakdown_by_category.map((c) => (
+                <tr key={c.category || Math.random()} className="hover:bg-[#121927] transition-colors duration-100">
                   <td className="py-2.5 font-sans font-medium text-slate-200">
-                    {c.category.replace(/_/g, ' ')}
+                    {String(c.category || '').replace(/_/g, ' ')}
                   </td>
-                  <td className="py-2.5 text-right text-slate-400">{c.total_count}</td>
-                  <td className="py-2.5 text-right text-slate-400">{c.baseline_recovery_rate}%</td>
-                  <td className="py-2.5 text-right text-emerald-400 font-semibold">{c.revive_recovery_rate}%</td>
+                  <td className="py-2.5 text-right text-slate-400">{c.total_count ?? 0}</td>
+                  <td className="py-2.5 text-right text-slate-400">{c.baseline_recovery_rate ?? 0}%</td>
+                  <td className="py-2.5 text-right text-emerald-400 font-semibold">{c.revive_recovery_rate ?? 0}%</td>
                   <td className="py-2.5 text-right">
                     <span className="text-emerald-400 font-semibold">
-                      +{c.rate_uplift_pts}% pts
+                      +{c.rate_uplift_pts ?? 0}% pts
                     </span>
                   </td>
                   <td className="py-2.5 text-right text-slate-200 font-medium">
-                    ₹{c.revive_recovered_value.toLocaleString('en-IN')}
+                    ₹{(c.revive_recovered_value ?? 0).toLocaleString('en-IN')}
                   </td>
                 </tr>
               ))}
@@ -313,9 +313,9 @@ export const StrategySimulator = ({ onSelectTransaction }) => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {benchmark?.sample_scenarios?.map((s) => (
+          {Array.isArray(benchmark?.sample_scenarios) && benchmark.sample_scenarios.map((s) => (
             <button
-              key={s.transaction_id}
+              key={s.transaction_id || Math.random()}
               onClick={() => onSelectTransaction(s.transaction_id)}
               className="p-3 rounded-md bg-[#0B101A] border border-[#17202F] hover:border-[#222E42] hover:bg-[#101726] text-left transition-colors duration-150 group cursor-pointer active:scale-[0.99] flex flex-col justify-between"
             >
@@ -325,7 +325,7 @@ export const StrategySimulator = ({ onSelectTransaction }) => {
                     {s.transaction_id}
                   </span>
                   <span className="font-mono text-emerald-400 font-medium">
-                    ₹{s.amount.toLocaleString('en-IN')}
+                    ₹{(s.amount ?? 0).toLocaleString('en-IN')}
                   </span>
                 </div>
                 <div className="text-xs font-medium text-slate-300 mt-1">
