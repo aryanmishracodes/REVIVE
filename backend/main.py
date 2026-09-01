@@ -1,5 +1,6 @@
 """
 FastAPI application entrypoint for REVIVE.
+Version: 1.0.1 (Production Serverless Build)
 """
 import os
 from fastapi import FastAPI
