@@ -1,10 +1,9 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "frontend/dist",
-
   "rewrites": [
     {
-      "source": "/api/:path*",
+      "source": "/api/(.*)",
       "destination": "/api/index.py"
     },
     {
@@ -20,14 +19,13 @@
       "destination": "/api/index.py"
     },
     {
-      "source": "/:path*",
+      "source": "/((?!api/|health|docs|openapi.json|assets/|favicon.ico|.*\\..*).*)",
       "destination": "/index.html"
     }
   ],
-
   "headers": [
     {
-      "source": "/assets/:path*",
+      "source": "/assets/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -36,7 +34,7 @@
       ]
     },
     {
-      "source": "/:path*",
+      "source": "/((?!assets/).*)",
       "headers": [
         {
           "key": "Cache-Control",
