@@ -3,7 +3,9 @@ import {
   ArrowLeft, 
   ShieldCheck, 
   ShieldAlert, 
+  Check,
   CheckCircle2, 
+  X,
   XCircle, 
   Clock, 
   User, 
@@ -437,7 +439,7 @@ export const TransactionDetail = ({ txId, onBack, onSelectDemo }) => {
                           <span>Approve Action</span>
                         </button>
                         <button
-                          onClick={() => handleRejectPrompt(primaryAction.action_id)}
+                          onClick={() => handleReject(primaryAction.action_id)}
                           disabled={executing}
                           className="px-3 py-1.5 rounded-md bg-[#161F2E] border border-[#222E42] hover:bg-rose-500/20 hover:border-rose-500/30 text-rose-300 font-medium text-xs transition-colors flex items-center gap-1.5 active:scale-[0.98] disabled:opacity-50"
                         >
