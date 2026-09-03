@@ -58,7 +58,7 @@ async def get_latest_simulation(db: AsyncSession = Depends(get_db)):
         revive_high_value_rate=run.high_value_revive_recovery_rate,
         revenue_uplift_amount=metrics.get("revenue_uplift_amount", run.revive_recovered_value - run.baseline_recovered_value),
         revenue_uplift_percent=run.uplift_percentage,
-        retries_saved_percent=metrics.get("retries_saved_percent", 48.5),
+        retries_saved_percent=metrics.get("retries_saved_percent", 77.72),
         breakdown_by_category=metrics.get("breakdown_by_category", []),
         sample_scenarios=scenarios,
     )

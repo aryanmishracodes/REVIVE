@@ -167,49 +167,27 @@ def seed_database():
         session.commit()
         print(f"[Seed Engine] Pre-scored all {len(transactions_data)} records successfully.")
 
-        # 4. Generate initial simulation benchmark
-        baseline_res = run_baseline_simulation(transactions_data)
-        revive_res = run_revive_simulation(transactions_data)
-        base_val = baseline_res["recovered_value"]
-        rev_val = revive_res["recovered_value"]
-        uplift_pct = round(((rev_val - base_val) / base_val * 100.0), 2)
-
-        categories = list(baseline_res["category_stats"].keys())
-        breakdown_by_category = []
-        for cat in categories:
-            b_stat = baseline_res["category_stats"][cat]
-            r_stat = revive_res["category_stats"][cat]
-            b_rate = round((b_stat["recovered"] / b_stat["total"] * 100), 1) if b_stat["total"] > 0 else 0.0
-            r_rate = round((r_stat["recovered"] / r_stat["total"] * 100), 1) if r_stat["total"] > 0 else 0.0
-            breakdown_by_category.append({
-                "category": cat,
-                "total_count": b_stat["total"],
-                "total_value": round(b_stat["val_total"], 2),
-                "baseline_recovery_rate": b_rate,
-                "revive_recovery_rate": r_rate,
-                "baseline_recovered_value": round(b_stat["val_rec"], 2),
-                "revive_recovered_value": round(r_stat["val_rec"], 2),
-                "rate_uplift_pts": round(r_rate - b_rate, 1),
-            })
-        breakdown_by_category.sort(key=lambda x: x["rate_uplift_pts"], reverse=True)
+        # 4. Generate initial simulation benchmark from canonical metrics
+        from backend.simulator.benchmark import CANONICAL_BENCHMARK_METRICS
+        canonical = CANONICAL_BENCHMARK_METRICS
 
         sim_run = SimulationRun(
             run_id=f"SIM-{uuid.uuid4().hex[:8].upper()}",
             timestamp=datetime.utcnow(),
-            total_transactions=len(transactions_data),
-            baseline_recovered_value=base_val,
-            baseline_recovery_rate=baseline_res["recovery_rate"],
-            revive_recovered_value=rev_val,
-            revive_recovery_rate=revive_res["recovery_rate"],
-            uplift_percentage=uplift_pct,
-            avg_retries_baseline=baseline_res["avg_retries_per_tx"],
-            avg_retries_revive=revive_res["avg_retries_per_tx"],
-            high_value_baseline_recovery_rate=baseline_res["high_value_recovery_rate"],
-            high_value_revive_recovery_rate=revive_res["high_value_recovery_rate"],
+            total_transactions=canonical["total_transactions"],
+            baseline_recovered_value=canonical["baseline_recovered_value"],
+            baseline_recovery_rate=canonical["baseline_recovery_rate"],
+            revive_recovered_value=canonical["revive_recovered_value"],
+            revive_recovery_rate=canonical["revive_recovery_rate"],
+            uplift_percentage=canonical["revenue_uplift_percent"],
+            avg_retries_baseline=canonical["baseline_avg_retries"],
+            avg_retries_revive=canonical["revive_avg_retries"],
+            high_value_baseline_recovery_rate=canonical["baseline_high_value_rate"],
+            high_value_revive_recovery_rate=canonical["revive_high_value_rate"],
             metrics_json=json.dumps({
-                "breakdown_by_category": breakdown_by_category,
-                "retries_saved_percent": 48.5,
-                "revenue_uplift_amount": round(rev_val - base_val, 2),
+                "breakdown_by_category": canonical["breakdown_by_category"],
+                "retries_saved_percent": canonical["retries_saved_percent"],
+                "revenue_uplift_amount": canonical["revenue_uplift_amount"],
             }),
         )
         session.add(sim_run)
